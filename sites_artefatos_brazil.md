@@ -71,6 +71,7 @@
 | **SOL + Rede Brasileira de Reprodutibilidade** | Integração da SBC à RBR / avanço em ciência aberta. | https://www.sbc.org.br/sol-avanca-na-ciencia-aberta-e-integra-a-rede-brasileira-de-reprodutibilidade/ |
 | **Horizontes (revista SBC)** | Artigo de divulgação "O Papel dos Artefatos na Reprodutibilidade..." (SBRC). | https://horizontes.sbc.org.br/index.php/2024/12/o-papel-dos-artefatos-na-reprodutibilidade-de-experimentos-um-estudo-do-sbrc/ |
 | **HotCRP do CTA (C3SL/UFPR)** | Sistema de submissão dos Comitês Técnicos de Artefatos. | https://hotcrp.c3sl.ufpr.br/ |
+| **AI Horizon Labs** | Principal grupo articulador do modelo brasileiro de selos (concepção, curadoria e desenvolvimento). | https://ai-horizon-labs.github.io |
 | **LEA — Lab. de Estudos Avançados (UNIPAMPA)** | Grupo articulador do modelo brasileiro de selos. | https://sites.unipampa.edu.br/lea/ |
 
 ### Modelo brasileiro de selos (4 dimensões)
