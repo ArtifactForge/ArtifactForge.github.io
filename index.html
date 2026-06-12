@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ArtifactForge — Avaliação de Artefatos no Brasil e no Mundo</title>
+<meta name="description" content="Panorama da Avaliação de Artefatos (Artifact Evaluation / AE) e selos de reprodutibilidade — com destaque para a experiência brasileira que inova o mundo dos artefatos." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* Forge palette: warm paper, ink, ember accent */
+    --paper:      #F7F3EC;
+    --paper-2:    #F1EADD;
+    --ink:        #1B1714;
+    --ink-soft:   #4A423B;
+    --ink-faint:  #8A7E72;
+    --line:       #DAD0BF;
+    --ember:      #C2410C;   /* forge ember */
+    --ember-deep: #9A2E06;
+    --ember-glow: #F59E0B;   /* heated metal */
+    --steel:      #2B3A42;   /* cool counterpoint */
+
+    /* Four Brazilian seals */
+    --seal-disp:  #1D6FB8;   /* Disponível  */
+    --seal-func:  #1E8E5A;   /* Funcional   */
+    --seal-sust:  #C2410C;   /* Sustentável */
+    --seal-repr:  #7A4FB5;   /* Reprodutível*/
+
+    --display: "Fraunces", Georgia, serif;
+    --body: "IBM Plex Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+
+    --maxw: 1200px;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(27,23,20,.04), 0 12px 36px -16px rgba(27,23,20,.22);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 86px; }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    color: var(--ink);
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(120% 80% at 85% -10%, rgba(245,158,11,.16), transparent 55%),
+      radial-gradient(90% 60% at -10% 0%, rgba(194,65,12,.10), transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--ember); color: #fff; }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 clamp(20px, 5vw, 56px); }
+
+  /* lang switching */
+  [data-en] { display: none; }
+  html[lang="en"] [data-pt] { display: none; }
+  html[lang="en"] [data-en] { display: inline; }
+  html[lang="en"] p[data-en],
+  html[lang="en"] span.block[data-en],
+  html[lang="en"] div[data-en] { display: block; }
+
+  /* ============ NAV ============ */
+  header.nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--paper) 86%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: var(--maxw); margin: 0 auto;
+    padding: 14px clamp(20px, 5vw, 56px);
+    display: flex; align-items: center; gap: 28px;
+  }
+  .brand { display: flex; align-items: center; gap: 11px; font-weight: 700; letter-spacing: -.01em; font-size: 1.12rem; text-decoration: none; }
+  .brand .mark {
+    width: 30px; height: 30px; flex: none; border-radius: 8px;
+    background: linear-gradient(150deg, var(--ember-glow), var(--ember) 55%, var(--ember-deep));
+    box-shadow: 0 0 0 1px rgba(154,46,6,.4), 0 6px 16px -6px var(--ember);
+    display: grid; place-items: center;
+  }
+  .brand .mark svg { width: 17px; height: 17px; }
+  .brand b { font-family: var(--display); font-weight: 600; }
+  .nav-links { margin-left: auto; display: flex; gap: 22px; align-items: center; }
+  .nav-links a { text-decoration: none; font-size: .92rem; color: var(--ink-soft); font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--ember); }
+  .lang-toggle {
+    display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden;
+    font-family: var(--mono); font-size: .78rem; background: var(--paper-2);
+  }
+  .lang-toggle button {
+    border: 0; background: transparent; cursor: pointer; padding: 6px 12px;
+    color: var(--ink-faint); font-family: inherit; font-size: inherit; font-weight: 600; transition: .2s;
+  }
+  .lang-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  @media (max-width: 860px) { .nav-links a:not(.cta-mini) { display: none; } }
+
+  /* ============ HERO ============ */
+  .hero { position: relative; padding: clamp(60px, 11vh, 130px) 0 clamp(48px, 8vh, 96px); }
+  .eyebrow {
+    font-family: var(--mono); font-size: .8rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ember-deep); display: inline-flex; align-items: center; gap: 9px; margin-bottom: 22px;
+  }
+  .eyebrow::before { content:""; width: 30px; height: 1px; background: var(--ember); }
+  h1.hero-title {
+    font-family: var(--display);
+    font-size: clamp(2.6rem, 7vw, 5.4rem);
+    line-height: .98; font-weight: 600; letter-spacing: -.025em; margin: 0 0 26px;
+    font-optical-sizing: auto;
+  }
+  h1.hero-title em { font-style: italic; color: var(--ember); }
+  .hero-sub { font-size: clamp(1.05rem, 2vw, 1.32rem); color: var(--ink-soft); max-width: 60ch; margin: 0 0 36px; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    padding: 13px 22px; border-radius: 999px; font-weight: 600; font-size: .96rem; transition: transform .15s, box-shadow .2s;
+  }
+  .btn-primary { background: var(--ink); color: var(--paper); box-shadow: var(--shadow); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px -14px rgba(27,23,20,.5); }
+  .btn-ghost { border: 1px solid var(--line); color: var(--ink); background: color-mix(in srgb, var(--paper) 60%, #fff); }
+  .btn-ghost:hover { border-color: var(--ember); color: var(--ember); }
+  .btn .arr { transition: transform .2s; }
+  .btn:hover .arr { transform: translateX(3px); }
+
+  .seal-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 44px; }
+  .seal {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 15px 8px 12px;
+    border-radius: 999px; background: #fff; border: 1px solid var(--line);
+    font-size: .86rem; font-weight: 600; box-shadow: 0 4px 14px -10px rgba(27,23,20,.4);
+  }
+  .seal .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 22%, transparent); background: var(--c); }
+  .seal.disp { --c: var(--seal-disp); } .seal.func { --c: var(--seal-func); }
+  .seal.sust { --c: var(--seal-sust); } .seal.repr { --c: var(--seal-repr); }
+
+  /* anim */
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  .hero .reveal { transition-delay: var(--d, 0s); }
+
+  /* ============ SECTIONS ============ */
+  section { padding: clamp(56px, 9vh, 104px) 0; position: relative; }
+  .sec-head { max-width: 70ch; margin-bottom: 44px; }
+  .sec-kicker {
+    font-family: var(--mono); font-size: .76rem; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--ember-deep); margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-kicker .num { color: var(--ink-faint); }
+  h2.sec-title { font-family: var(--display); font-weight: 600; font-size: clamp(1.9rem, 4vw, 3rem); line-height: 1.04; letter-spacing: -.02em; margin: 0 0 16px; }
+  .sec-lead { font-size: 1.08rem; color: var(--ink-soft); margin: 0; }
+
+  /* ============ BRAZIL FEATURE ============ */
+  #brasil { background:
+      linear-gradient(180deg, transparent, rgba(241,234,221,.6) 30%, rgba(241,234,221,.6) 70%, transparent),
+      none; }
+  .flag-tag {
+    display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono);
+    font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 600;
+    padding: 5px 12px; border-radius: 999px; background: var(--steel); color: #EAF1F2; margin-bottom: 18px;
+  }
+  .feature-card {
+    background: linear-gradient(150deg, #fff, #FBF7F0);
+    border: 1px solid var(--line); border-radius: 20px; padding: clamp(26px, 4vw, 46px);
+    box-shadow: var(--shadow); position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ""; position: absolute; inset: 0 0 auto auto; width: 280px; height: 280px;
+    background: radial-gradient(circle at 70% 30%, rgba(245,158,11,.22), transparent 65%);
+    pointer-events: none;
+  }
+  .feature-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(24px, 4vw, 56px); align-items: center; }
+  @media (max-width: 820px) { .feature-grid { grid-template-columns: 1fr; } }
+  .feature-card h3 { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.1rem); line-height: 1.1; margin: 0 0 14px; font-weight: 600; }
+  .feature-card p { color: var(--ink-soft); margin: 0 0 16px; }
+  .paper-cite {
+    font-family: var(--mono); font-size: .82rem; color: var(--ink-faint);
+    border-left: 3px solid var(--ember); padding: 6px 0 6px 14px; margin: 18px 0 22px; line-height: 1.5;
+  }
+  .paper-cite b { color: var(--ink); font-weight: 600; }
+  .feature-links { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  .doc-panel {
+    background: var(--steel); color: #EAF1F2; border-radius: 16px; padding: 26px;
+    font-family: var(--mono); position: relative; overflow: hidden;
+  }
+  .doc-panel .bar { display: flex; gap: 7px; margin-bottom: 18px; }
+  .doc-panel .bar i { width: 11px; height: 11px; border-radius: 50%; background: #4a5b63; }
+  .doc-panel .bar i:first-child { background: var(--ember-glow); }
+  .doc-panel .line { font-size: .84rem; margin: 7px 0; color: #b9c6cc; }
+  .doc-panel .line .k { color: var(--ember-glow); }
+  .doc-panel .line .v { color: #fff; }
+  .doc-panel a.doc-cta {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; text-decoration: none;
+    color: var(--steel); background: var(--ember-glow); font-weight: 700; padding: 10px 16px; border-radius: 8px; font-size: .82rem;
+  }
+
+  /* seal model */
+  .seal-model { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px; }
+  @media (max-width: 760px) { .seal-model { grid-template-columns: repeat(2, 1fr); } }
+  .seal-card {
+    background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 12px;
+    padding: 20px; box-shadow: 0 6px 20px -16px rgba(27,23,20,.4);
+  }
+  .seal-card.disp { --c: var(--seal-disp); } .seal-card.func { --c: var(--seal-func); }
+  .seal-card.sust { --c: var(--seal-sust); } .seal-card.repr { --c: var(--seal-repr); }
+  .seal-card .badge {
+    display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 10px;
+    background: color-mix(in srgb, var(--c) 14%, #fff); color: var(--c); margin-bottom: 14px;
+  }
+  .seal-card .badge svg { width: 20px; height: 20px; }
+  .seal-card h4 { margin: 0 0 6px; font-size: 1.06rem; font-weight: 700; }
+  .seal-card p { margin: 0; font-size: .88rem; color: var(--ink-soft); }
+
+  /* generic card grid */
+  .grid { display: grid; gap: 18px; }
+  .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 900px) { .grid.cols-3 { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 620px) { .grid.cols-3, .grid.cols-2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 22px; box-shadow: 0 6px 22px -18px rgba(27,23,20,.5); transition: transform .18s, box-shadow .25s, border-color .25s;
+    display: flex; flex-direction: column;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--ember) 40%, var(--line)); }
+  .card .tag {
+    align-self: flex-start; font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ember-deep); background: color-mix(in srgb, var(--ember) 10%, #fff); padding: 4px 9px; border-radius: 6px; margin-bottom: 14px; font-weight: 600;
+  }
+  .card h4 { margin: 0 0 8px; font-size: 1.08rem; font-weight: 700; line-height: 1.25; }
+  .card p { margin: 0 0 16px; font-size: .9rem; color: var(--ink-soft); flex: 1; }
+  .card a.link {
+    text-decoration: none; font-family: var(--mono); font-size: .8rem; color: var(--ember-deep); font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px; word-break: break-word;
+  }
+  .card a.link:hover { color: var(--ember); }
+  .card a.link .arr { transition: transform .2s; }
+  .card a.link:hover .arr { transform: translateX(3px); }
+
+  /* event list */
+  .ev-list { display: grid; gap: 12px; }
+  .ev {
+    display: grid; grid-template-columns: 130px 1fr auto; gap: 18px; align-items: center;
+    background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; transition: border-color .2s, transform .15s;
+  }
+  .ev:hover { border-color: color-mix(in srgb, var(--ember) 45%, var(--line)); transform: translateX(3px); }
+  .ev .name { font-weight: 700; font-family: var(--mono); font-size: .92rem; }
+  .ev .desc { font-size: .88rem; color: var(--ink-soft); }
+  .ev a { color: var(--ember-deep); font-family: var(--mono); font-size: .8rem; text-decoration: none; font-weight: 600; white-space: nowrap; }
+  .ev a:hover { color: var(--ember); }
+  @media (max-width: 720px) { .ev { grid-template-columns: 1fr; gap: 6px; } .ev a { justify-self: start; } }
+
+  /* world: area nav + groups */
+  .area-nav { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 42px; }
+  .area-nav a {
+    text-decoration: none; font-size: .85rem; font-weight: 600; padding: 8px 15px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--ink-soft); background: #fff; transition: .18s;
+  }
+  .area-nav a:hover { border-color: var(--ember); color: var(--ember); transform: translateY(-2px); }
+  .area-group { margin-bottom: 46px; scroll-margin-top: 96px; }
+  .area-group h3 {
+    font-family: var(--display); font-size: 1.5rem; font-weight: 600; margin: 0 0 6px; display: flex; align-items: baseline; gap: 12px;
+  }
+  .area-group h3 .gn { font-family: var(--mono); font-size: .9rem; color: var(--ember); font-weight: 500; }
+  .area-group > p.intro { margin: 0 0 20px; color: var(--ink-soft); font-size: .96rem; }
+
+  /* taxonomy strip */
+  .tax {
+    display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; margin-top: 34px;
+  }
+  @media (max-width: 860px) { .tax { grid-template-columns: repeat(2,1fr); } }
+  .tax .t { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .tax .t .n { font-family: var(--mono); font-size: .72rem; color: var(--ink-faint); }
+  .tax .t h4 { margin: 6px 0 6px; font-size: .98rem; }
+  .tax .t p { margin: 0; font-size: .82rem; color: var(--ink-soft); }
+
+  .callout {
+    background: linear-gradient(150deg, var(--steel), #1e2a30); color: #EAF1F2; border-radius: 20px;
+    padding: clamp(30px, 5vw, 56px); position: relative; overflow: hidden; margin-top: 8px;
+  }
+  .callout::after {
+    content: ""; position: absolute; right: -60px; bottom: -60px; width: 260px; height: 260px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,158,11,.3), transparent 70%);
+  }
+  .callout h2 { font-family: var(--display); font-size: clamp(1.6rem, 3.4vw, 2.4rem); margin: 0 0 14px; font-weight: 600; }
+  .callout p { color: #c4d0d5; max-width: 62ch; margin: 0 0 24px; }
+  .callout .btn-primary { background: var(--ember-glow); color: var(--steel); }
+  .callout .btn-ghost { border-color: rgba(255,255,255,.25); color: #fff; }
+
+  /* footer */
+  footer {
+    border-top: 1px solid var(--line); padding: 56px 0 70px; margin-top: 40px;
+    background: var(--paper-2);
+  }
+  .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 30px; }
+  @media (max-width: 760px) { .foot-grid { grid-template-columns: 1fr; gap: 22px; } }
+  footer h5 { font-family: var(--mono); font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 14px; }
+  footer a { color: var(--ink-soft); text-decoration: none; font-size: .9rem; display: block; margin-bottom: 8px; transition: color .2s; }
+  footer a:hover { color: var(--ember); }
+  footer .desc { color: var(--ink-soft); font-size: .92rem; max-width: 40ch; }
+  .foot-bottom { margin-top: 42px; padding-top: 22px; border-top: 1px solid var(--line); font-size: .82rem; color: var(--ink-faint); display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; }
+
+  .stat-row { display: flex; flex-wrap: wrap; gap: 30px; margin-top: 8px; }
+  .stat b { font-family: var(--display); font-size: 2.2rem; font-weight: 600; color: var(--ember); display: block; line-height: 1; }
+  .stat span { font-size: .82rem; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="m7 8 4-4 4 4"/><path d="M11 4v9"/><path d="M5 21l2-6h8l2 6"/></svg>
+      </span>
+      <span>Artifact<b>Forge</b></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#brasil"><span data-pt>Brasil</span><span data-en>Brazil</span></a>
+      <a href="#mundo"><span data-pt>Mundo</span><span data-en>World</span></a>
+      <a href="#politicas"><span data-pt>Padrões</span><span data-en>Standards</span></a>
+      <a href="#recursos"><span data-pt>Recursos</span><span data-en>Resources</span></a>
+      <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+        <button id="bt-pt" aria-pressed="true">PT</button>
+        <button id="bt-en" aria-pressed="false">EN</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow reveal" style="--d:.05s">
+      <span data-pt>Avaliação de Artefatos · Artifact Evaluation</span>
+      <span data-en>Artifact Evaluation · Avaliação de Artefatos</span>
+    </span>
+    <h1 class="hero-title reveal" style="--d:.12s">
+      <span data-pt>Onde a ciência<br>vira <em>artefato</em><br>reprodutível.</span>
+      <span data-en>Where science<br>becomes a reproducible<br><em>artifact</em>.</span>
+    </h1>
+    <p class="hero-sub reveal" style="--d:.22s">
+      <span data-pt>Um panorama da avaliação de artefatos e dos selos de reprodutibilidade — no Brasil e no mundo. Com destaque para a experiência brasileira, que forjou um modelo próprio e levou inovações ao campo global de artefatos.</span>
+      <span data-en>A map of artifact evaluation and reproducibility badging — in Brazil and worldwide. Featuring the Brazilian experience, which forged its own model and brought innovations to the global artifacts field.</span>
+    </p>
+    <div class="hero-actions reveal" style="--d:.3s">
+      <a class="btn btn-primary" href="#brasil">
+        <span data-pt>A experiência brasileira</span><span data-en>The Brazilian experience</span>
+        <span class="arr">→</span>
+      </a>
+      <a class="btn btn-ghost" href="#mundo">
+        <span data-pt>Explorar o mundo</span><span data-en>Explore the world</span>
+      </a>
+    </div>
+    <div class="seal-row reveal" style="--d:.4s" aria-label="Modelo brasileiro de 4 selos">
+      <span class="seal disp"><span class="dot"></span>Disponível</span>
+      <span class="seal func"><span class="dot"></span>Funcional</span>
+      <span class="seal sust"><span class="dot"></span>Sustentável</span>
+      <span class="seal repr"><span class="dot"></span>Reprodutível</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BRASIL ===== -->
+<section id="brasil">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="flag-tag">🇧🇷 <span data-pt>Em destaque</span><span data-en>Featured</span></span>
+      <h2 class="sec-title">
+        <span data-pt>A experiência brasileira que inova o mundo dos artefatos</span>
+        <span data-en>The Brazilian experience innovating the world of artifacts</span>
+      </h2>
+      <p class="sec-lead">
+        <span data-pt>A comunidade da SBC construiu um processo público e transparente de avaliação de artefatos, articulado pela UNIPAMPA e parceiros, com um modelo próprio de quatro selos. O resultado: documentação aberta reaproveitada por toda a comunidade e um artigo que leva essas contribuições ao debate internacional.</span>
+        <span data-en>The SBC community built a public, transparent artifact evaluation process — led by UNIPAMPA and partners — with its own four-badge model. The result: open documentation reused across the community and a paper that carries these contributions into the international debate.</span>
+      </p>
+    </div>
+
+    <!-- Feature card: doc-artefatos + paper -->
+    <div class="feature-card reveal">
+      <div class="feature-grid">
+        <div>
+          <h3>
+            <span data-pt>Documentação aberta &amp; o paper que nasceu da prática</span>
+            <span data-en>Open documentation &amp; the paper born from practice</span>
+          </h3>
+          <p>
+            <span data-pt>O <b>doc-artefatos.github.io</b> reúne, de forma pública, o guia vivo do processo de avaliação de artefatos dos eventos da SBC — critérios, fluxo de submissão, papel dos Comitês Técnicos de Artefatos (CTA) e o significado de cada selo. É a referência prática que padroniza a experiência entre eventos.</span>
+            <span data-en><b>doc-artefatos.github.io</b> publicly gathers the living guide of SBC's artifact evaluation process — criteria, submission flow, the role of the Artifact Technical Committees (CTA), and the meaning of each badge. It is the practical reference standardizing the experience across events.</span>
+          </p>
+          <div class="paper-cite">
+            <span data-pt><b>Paper resultante.</b> A experiência foi sistematizada em um artigo publicado na ACM Digital Library, trazendo inovações ao campo de artefatos — incluindo o eixo de <i>sustentabilidade</i> dos artefatos como dimensão própria de avaliação.</span>
+            <span data-en><b>Resulting paper.</b> The experience was systematized in a paper published in the ACM Digital Library, bringing innovations to the artifacts field — including artifact <i>sustainability</i> as a first-class evaluation dimension.</span>
+            <br><span style="color:var(--ember-deep)">doi.org/10.1145/3806097.3806100</span>
+          </div>
+          <div class="feature-links">
+            <a class="btn btn-primary" href="https://doc-artefatos.github.io/" target="_blank" rel="noopener">
+              doc-artefatos.github.io <span class="arr">↗</span>
+            </a>
+            <a class="btn btn-ghost" href="https://dl.acm.org/doi/abs/10.1145/3806097.3806100" target="_blank" rel="noopener">
+              <span data-pt>Ler o paper (ACM DL)</span><span data-en>Read the paper (ACM DL)</span> ↗
+            </a>
+          </div>
+        </div>
+
+        <div class="doc-panel" aria-hidden="false">
+          <div class="bar"><i></i><i></i><i></i></div>
+          <div class="line"><span class="k">processo</span> = <span class="v">"Avaliação de Artefatos (AE)"</span></div>
+          <div class="line"><span class="k">comunidade</span> = <span class="v">SBC · UNIPAMPA + parceiros</span></div>
+          <div class="line"><span class="k">selos</span> = [<span class="v">Disponível, Funcional,</span></div>
+          <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="v">Sustentável, Reprodutível</span>]</div>
+          <div class="line"><span class="k">pioneiro</span> = <span class="v">SBSeg (2023)</span></div>
+          <div class="line"><span class="k">expansão</span> = <span class="v">SBRC, SBES, SBSI, SBSC…</span></div>
+          <div class="line"><span class="k">infra</span> = <span class="v">SOL · HotCRP/CTA (C3SL)</span></div>
+          <a class="doc-cta" href="https://doc-artefatos.github.io/" target="_blank" rel="noopener">
+            <span data-pt>Abrir documentação</span><span data-en>Open documentation</span> ↗
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Four-seal model -->
+    <div class="sec-head reveal" style="margin-top:64px; margin-bottom:0;">
+      <span class="sec-kicker"><span class="num">01</span><span data-pt>O modelo brasileiro de selos</span><span data-en>The Brazilian badge model</span></span>
+      <h2 class="sec-title" style="font-size:clamp(1.5rem,3vw,2.2rem)">
+        <span data-pt>Quatro dimensões de qualidade</span>
+        <span data-en>Four dimensions of quality</span>
+      </h2>
+      <p class="sec-lead">
+        <span data-pt>Espelhando práticas de SIGCOMM, USENIX, CoNEXT e EuroSys e mapeáveis à taxonomia da ACM — com o diferencial de tratar a <b>sustentabilidade</b> como eixo explícito.</span>
+        <span data-en>Mirroring practices from SIGCOMM, USENIX, CoNEXT and EuroSys and mappable to the ACM taxonomy — with the distinctive move of treating <b>sustainability</b> as an explicit axis.</span>
+      </p>
+    </div>
+    <div class="seal-model reveal">
+      <div class="seal-card disp">
+        <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg></span>
+        <h4>Disponível</h4>
+        <p><span data-pt>O artefato está depositado de forma pública e persistente, com identificador estável.</span><span data-en>The artifact is publicly and persistently archived, with a stable identifier.</span></p>
+      </div>
+      <div class="seal-card func">
+        <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <h4>Funcional</h4>
+        <p><span data-pt>O artefato pode ser instalado e executado; faz o que o paper descreve.</span><span data-en>The artifact can be installed and run; it does what the paper describes.</span></p>
+      </div>
+      <div class="seal-card sust">
+        <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg></span>
+        <h4>Sustentável</h4>
+        <p><span data-pt>Documentação, licença e estrutura que permitem manutenção e reuso ao longo do tempo.</span><span data-en>Documentation, licensing and structure enabling maintenance and reuse over time.</span></p>
+      </div>
+      <div class="seal-card repr">
+        <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg></span>
+        <h4>Reprodutível</h4>
+        <p><span data-pt>Os resultados centrais do paper podem ser reproduzidos a partir do artefato.</span><span data-en>The paper's core results can be reproduced from the artifact.</span></p>
+      </div>
+    </div>
+
+    <!-- Brazilian events -->
+    <div class="sec-head reveal" style="margin-top:64px; margin-bottom:24px;">
+      <span class="sec-kicker"><span class="num">02</span><span data-pt>Eventos da SBC com avaliação de artefatos</span><span data-en>SBC events with artifact evaluation</span></span>
+    </div>
+    <div class="ev-list reveal">
+      <div class="ev">
+        <span class="name">SBSeg</span>
+        <span class="desc"><span data-pt>Cibersegurança — pioneiro: selo desde 2023. Comitê Técnico de Artefatos &amp; Salão de Ferramentas.</span><span data-en>Cybersecurity — pioneer: badge since 2023. Artifact Technical Committee &amp; Tools Track.</span></span>
+        <a href="https://www.sbseg2026.uff.br/chamadas/sf/" target="_blank" rel="noopener">sbseg2026 ↗</a>
+      </div>
+      <div class="ev">
+        <span class="name">SBRC</span>
+        <span class="desc"><span data-pt>Redes e Sistemas Distribuídos — selos na Trilha Principal desde 2025; SeloR (reprodutível).</span><span data-en>Networks &amp; Distributed Systems — badges in the Main Track since 2025; SeloR (reproducible).</span></span>
+        <a href="https://sbrc.sbc.org.br/2026/salao-de-ferramentas/" target="_blank" rel="noopener">sbrc2026 ↗</a>
+      </div>
+      <div class="ev">
+        <span class="name">SBES / CBSoft</span>
+        <span class="desc"><span data-pt>Engenharia de Software — Política de Ciência Aberta; seção de Disponibilidade de Artefatos.</span><span data-en>Software Engineering — Open Science Policy; Artifact Availability section.</span></span>
+        <a href="https://cbsoft.sbc.org.br/2026/pt/symposiums/sbes/call/" target="_blank" rel="noopener">sbes2026 ↗</a>
+      </div>
+      <div class="ev">
+        <span class="name">SBSI</span>
+        <span class="desc"><span data-pt>Sistemas de Informação — Trilha de Pesquisa com ciência aberta / artefatos.</span><span data-en>Information Systems — Research Track with open science / artifacts.</span></span>
+        <a href="https://sbsi.sbc.org.br/2026/chamada-pesquisa.php" target="_blank" rel="noopener">sbsi2026 ↗</a>
+      </div>
+      <div class="ev">
+        <span class="name">SBSC</span>
+        <span class="desc"><span data-pt>Sistemas Colaborativos — trilha principal com incentivo a artefatos.</span><span data-en>Collaborative Systems — main track encouraging artifacts.</span></span>
+        <a href="https://sbsc.sbc.org.br/2026/index.php/trilha-principal/" target="_blank" rel="noopener">sbsc2026 ↗</a>
+      </div>
+    </div>
+    <p class="sec-lead reveal" style="font-size:.92rem; margin-top:16px; color:var(--ink-faint)">
+      <span data-pt>Em adoção progressiva: SBBD, WSCAD, SBLP, SBCAS, SBGames — verificar editais por ano.</span>
+      <span data-en>In progressive adoption: SBBD, WSCAD, SBLP, SBCAS, SBGames — check yearly calls.</span>
+    </p>
+
+    <!-- Brazilian infrastructure -->
+    <div class="sec-head reveal" style="margin-top:64px; margin-bottom:24px;">
+      <span class="sec-kicker"><span class="num">03</span><span data-pt>Infraestrutura e política nacional</span><span data-en>National infrastructure &amp; policy</span></span>
+    </div>
+    <div class="grid cols-3 reveal">
+      <div class="card">
+        <span class="tag">Repositório</span>
+        <h4>SBC OpenLib (SOL)</h4>
+        <p><span data-pt>Maior repositório de acesso aberto de Computação da América Latina; hospeda os anais e integra a Rede Brasileira de Reprodutibilidade.</span><span data-en>Largest open-access Computing repository in Latin America; hosts proceedings and is integrated with the Brazilian Reproducibility Network.</span></p>
+        <a class="link" href="https://sol.sbc.org.br/" target="_blank" rel="noopener">sol.sbc.org.br <span class="arr">→</span></a>
+      </div>
+      <div class="card">
+        <span class="tag">Submissão</span>
+        <h4>HotCRP do CTA — C3SL/UFPR</h4>
+        <p><span data-pt>Sistema de submissão e gestão dos Comitês Técnicos de Artefatos.</span><span data-en>Submission and management system for the Artifact Technical Committees.</span></p>
+        <a class="link" href="https://hotcrp.c3sl.ufpr.br/" target="_blank" rel="noopener">hotcrp.c3sl.ufpr.br <span class="arr">→</span></a>
+      </div>
+      <div class="card">
+        <span class="tag">Grupo articulador</span>
+        <h4>LEA — UNIPAMPA</h4>
+        <p><span data-pt>Laboratório de Estudos Avançados, articulador do modelo brasileiro de selos.</span><span data-en>Advanced Studies Lab, driver of the Brazilian badge model.</span></p>
+        <a class="link" href="https://sites.unipampa.edu.br/lea/" target="_blank" rel="noopener">sites.unipampa.edu.br/lea <span class="arr">→</span></a>
+      </div>
+      <div class="card">
+        <span class="tag">Divulgação</span>
+        <h4>Horizontes (SBC)</h4>
+        <p><span data-pt>“O Papel dos Artefatos na Reprodutibilidade…”: disponibilização no SBRC subiu de 12,3% (2014) para 45,8% (2024).</span><span data-en>“The Role of Artifacts in Reproducibility…”: SBRC artifact availability rose from 12.3% (2014) to 45.8% (2024).</span></p>
+        <a class="link" href="https://horizontes.sbc.org.br/index.php/2024/12/o-papel-dos-artefatos-na-reprodutibilidade-de-experimentos-um-estudo-do-sbrc/" target="_blank" rel="noopener">horizontes.sbc.org.br <span class="arr">→</span></a>
+      </div>
+      <div class="card">
+        <span class="tag">Ciência aberta</span>
+        <h4>SOL + Rede Bras. de Reprodutibilidade</h4>
+        <p><span data-pt>Integração da SBC à RBR e avanço da agenda de ciência aberta nacional.</span><span data-en>SBC's integration with the RBR and progress on the national open-science agenda.</span></p>
+        <a class="link" href="https://www.sbc.org.br/sol-avanca-na-ciencia-aberta-e-integra-a-rede-brasileira-de-reprodutibilidade/" target="_blank" rel="noopener">sbc.org.br <span class="arr">→</span></a>
+      </div>
+      <div class="card">
+        <span class="tag">Política · PDF</span>
+        <h4>SBES — Política de Ciência Aberta</h4>
+        <p><span data-pt>Adaptada das políticas de Open Science do ICSE (documento em PT).</span><span data-en>Adapted from ICSE's Open Science policies (PT document).</span></p>
+        <a class="link" href="https://cbsoft.sbc.org.br/2025/docs/open-science_PT.pdf" target="_blank" rel="noopener">open-science_PT.pdf <span class="arr">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MUNDO ===== -->
+<section id="mundo">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-kicker"><span data-pt>Panorama internacional</span><span data-en>International panorama</span></span>
+      <h2 class="sec-title">
+        <span data-pt>A avaliação de artefatos no mundo</span>
+        <span data-en>Artifact evaluation around the world</span>
+      </h2>
+      <p class="sec-lead">
+        <span data-pt>Dezenas de conferências conduzem <i>Artifact Evaluation</i> e atribuem selos de reprodutibilidade. A forma mais eficiente de localizá-las é pelos <b>hubs por comunidade</b>, que centralizam links históricos e por edição.</span>
+        <span data-en>Dozens of conferences run <i>Artifact Evaluation</i> and award reproducibility badges. The most efficient way to find them is through <b>community hubs</b>, which centralize historical and per-edition links.</span>
+      </p>
+    </div>
+
+    <div class="area-nav reveal">
+      <a href="#a-hubs"><span data-pt>Hubs</span><span data-en>Hubs</span></a>
+      <a href="#a-sec"><span data-pt>Segurança</span><span data-en>Security</span></a>
+      <a href="#a-sys"><span data-pt>Sistemas &amp; Redes</span><span data-en>Systems &amp; Networks</span></a>
+      <a href="#a-pl"><span data-pt>Linguagens</span><span data-en>Languages</span></a>
+      <a href="#a-se"><span data-pt>Eng. de Software</span><span data-en>Software Eng.</span></a>
+      <a href="#a-db"><span data-pt>Bancos de Dados</span><span data-en>Databases</span></a>
+      <a href="#a-ai"><span data-pt>IA / ML</span><span data-en>AI / ML</span></a>
+      <a href="#a-rep"><span data-pt>Reprodutibilidade</span><span data-en>Reproducibility</span></a>
+    </div>
+
+    <!-- HUBS -->
+    <div class="area-group reveal" id="a-hubs">
+      <h3><span class="gn">/hubs</span><span data-pt>Hubs por comunidade</span><span data-en>Community hubs</span></h3>
+      <p class="intro"><span data-pt>Comece por aqui: agregam várias conferências num só site.</span><span data-en>Start here: they aggregate many conferences in a single site.</span></p>
+      <div class="grid cols-3">
+        <div class="card"><span class="tag">Systems</span><h4>Systems Research Artifacts</h4><p>EuroSys · SOSP · OSDI · USENIX ATC · ASPLOS</p><a class="link" href="https://sysartifacts.github.io/" target="_blank" rel="noopener">sysartifacts.github.io <span class="arr">→</span></a></div>
+        <div class="card"><span class="tag">Security</span><h4>Security Research Artifacts</h4><p>USENIX Security · NDSS · ACSAC · CHES · PETS · IEEE S&amp;P</p><a class="link" href="https://secartifacts.github.io/" target="_blank" rel="noopener">secartifacts.github.io <span class="arr">→</span></a></div>
+        <div class="card"><span class="tag">SE / PL</span><h4>conf.researchr.org</h4><p>ICSE · FSE/ESEC · ASE · ISSTA · ECOOP · MODELS · MSR · ISSRE</p><a class="link" href="https://conf.researchr.org/" target="_blank" rel="noopener">conf.researchr.org <span class="arr">→</span></a></div>
+      </div>
+    </div>
+
+    <!-- SECURITY -->
+    <div class="area-group reveal" id="a-sec">
+      <h3><span class="gn">/seguranca</span><span data-pt>Segurança &amp; Privacidade</span><span data-en>Security &amp; Privacy</span></h3>
+      <div class="ev-list">
+        <div class="ev"><span class="name">USENIX Security</span><span class="desc"><span data-pt>AE em 2 fases (disponibilidade + funcional/reprodutível); Open Science desde 2025.</span><span data-en>Two-phase AE (availability + functional/reproducible); Open Science since 2025.</span></span><a href="https://www.usenix.org/conference/usenixsecurity26/call-for-artifacts" target="_blank" rel="noopener">call ↗</a></div>
+        <div class="ev"><span class="name">ACM CCS</span><span class="desc"><span data-pt>Artifact Evaluation Committee — Call / HotCRP.</span><span data-en>Artifact Evaluation Committee — Call / HotCRP.</span></span><a href="https://www.sigsac.org/ccs/CCS2026/call-for-artifacts/" target="_blank" rel="noopener">ccs2026 ↗</a></div>
+        <div class="ev"><span class="name">NDSS</span><span class="desc"><span data-pt>AE desde 2024 — via hub de segurança.</span><span data-en>AE since 2024 — via security hub.</span></span><a href="https://secartifacts.github.io/ndss" target="_blank" rel="noopener">hub ↗</a></div>
+        <div class="ev"><span class="name">ACSAC</span><span class="desc"><span data-pt>AE consolidada, com guia de revisor (Paper Artifacts).</span><span data-en>Established AE with reviewer guide (Paper Artifacts).</span></span><a href="https://www.acsac.org/2024/program/artifacts/" target="_blank" rel="noopener">acsac ↗</a></div>
+        <div class="ev"><span class="name">CHES (IACR)</span><span class="desc"><span data-pt>Selos Available e Functional.</span><span data-en>Available and Functional badges.</span></span><a href="https://ches.iacr.org/2026/artifacts.php" target="_blank" rel="noopener">ches2026 ↗</a></div>
+        <div class="ev"><span class="name">PoPETs / PETS</span><span class="desc"><span data-pt>Privacy Enhancing Technologies — Artifact Evaluation.</span><span data-en>Privacy Enhancing Technologies — Artifact Evaluation.</span></span><a href="https://petsymposium.org/artifacts.php" target="_blank" rel="noopener">petsymposium ↗</a></div>
+      </div>
+    </div>
+
+    <!-- SYSTEMS -->
+    <div class="area-group reveal" id="a-sys">
+      <h3><span class="gn">/sistemas</span><span data-pt>Sistemas, Redes, Armazenamento &amp; HPC</span><span data-en>Systems, Networks, Storage &amp; HPC</span></h3>
+      <div class="ev-list">
+        <div class="ev"><span class="name">OSDI · NSDI · FAST</span><span class="desc"><span data-pt>Calls for Artifacts da USENIX.</span><span data-en>USENIX Calls for Artifacts.</span></span><a href="https://www.usenix.org/conference/osdi26/call-for-artifacts" target="_blank" rel="noopener">osdi26 ↗</a></div>
+        <div class="ev"><span class="name">EuroSys · SOSP · ATC · ASPLOS</span><span class="desc"><span data-pt>Via hub de sistemas.</span><span data-en>Via systems hub.</span></span><a href="https://sysartifacts.github.io/" target="_blank" rel="noopener">hub ↗</a></div>
+        <div class="ev"><span class="name">SIGCOMM / CoNEXT / IMC</span><span class="desc"><span data-pt>Artifacts Evaluation Committee de redes (selos ACM desde 2018).</span><span data-en>Networking Artifacts Evaluation Committee (ACM badges since 2018).</span></span><a href="https://www.sigcomm.org/" target="_blank" rel="noopener">sigcomm ↗</a></div>
+        <div class="ev"><span class="name">PPoPP</span><span class="desc"><span data-pt>Paralelismo — track SIGPLAN de Artifact Evaluation.</span><span data-en>Parallelism — SIGPLAN Artifact Evaluation track.</span></span><a href="https://ppopp25.sigplan.org/track/PPoPP-2025-artifact-evaluation" target="_blank" rel="noopener">ppopp ↗</a></div>
+        <div class="ev"><span class="name">SC — Supercomputing</span><span class="desc"><span data-pt>Reproducibility Initiative (AD/AE + AE Reports).</span><span data-en>Reproducibility Initiative (AD/AE + AE Reports).</span></span><a href="https://sc26.supercomputing.org/program/papers/reproducibility-initiative/" target="_blank" rel="noopener">sc26 ↗</a></div>
+      </div>
+    </div>
+
+    <!-- PL -->
+    <div class="area-group reveal" id="a-pl">
+      <h3><span class="gn">/linguagens</span><span data-pt>Linguagens de Programação &amp; Compiladores</span><span data-en>Programming Languages &amp; Compilers</span></h3>
+      <div class="ev-list">
+        <div class="ev"><span class="name">POPL</span><span class="desc"><span data-pt>Artifact Evaluation desde 2015.</span><span data-en>Artifact Evaluation since 2015.</span></span><a href="https://popl26.sigplan.org/track/POPL-2026-artifact-evaluation" target="_blank" rel="noopener">popl26 ↗</a></div>
+        <div class="ev"><span class="name">PLDI</span><span class="desc"><span data-pt>Declaração de intenção de artefato na submissão (novo em 2026).</span><span data-en>Artifact intent declaration at submission (new in 2026).</span></span><a href="https://pldi26.sigplan.org/track/pldi-2026-pldi-research-artifacts" target="_blank" rel="noopener">pldi26 ↗</a></div>
+        <div class="ev"><span class="name">OOPSLA / SPLASH</span><span class="desc">Artifact Evaluation.</span><a href="https://2026.splashcon.org/track/oopsla-2026" target="_blank" rel="noopener">splash ↗</a></div>
+        <div class="ev"><span class="name">CGO</span><span class="desc"><span data-pt>Code Generation and Optimization — Artifact Evaluation.</span><span data-en>Code Generation and Optimization — Artifact Evaluation.</span></span><a href="https://2026.cgo.org/track/cgo-2026-artifact-evaluation" target="_blank" rel="noopener">cgo2026 ↗</a></div>
+      </div>
+    </div>
+
+    <!-- SE -->
+    <div class="area-group reveal" id="a-se">
+      <h3><span class="gn">/eng-software</span><span data-pt>Engenharia de Software &amp; Modelagem</span><span data-en>Software Engineering &amp; Modeling</span></h3>
+      <div class="ev-list">
+        <div class="ev"><span class="name">ICSE</span><span class="desc"><span data-pt>Selos Available e Reusable.</span><span data-en>Available and Reusable badges.</span></span><a href="https://conf.researchr.org/track/icse-2026/icse-2026-artifact-evaluation" target="_blank" rel="noopener">icse2026 ↗</a></div>
+        <div class="ev"><span class="name">FSE · ASE · ISSTA · MSR · MODELS</span><span class="desc"><span data-pt>Tracks de AE em conf.researchr.org.</span><span data-en>AE tracks on conf.researchr.org.</span></span><a href="https://conf.researchr.org/" target="_blank" rel="noopener">researchr ↗</a></div>
+      </div>
+    </div>
+
+    <!-- DB -->
+    <div class="area-group reveal" id="a-db">
+      <h3><span class="gn">/bancos-de-dados</span><span data-pt>Bancos de Dados</span><span data-en>Databases</span></h3>
+      <div class="ev-list">
+        <div class="ev"><span class="name">ACM SIGMOD</span><span class="desc"><span data-pt>Availability &amp; Reproducibility Initiative (selos Reproducibility e Available).</span><span data-en>Availability &amp; Reproducibility Initiative (Reproducibility and Available badges).</span></span><a href="https://reproducibility.sigmod.org/" target="_blank" rel="noopener">sigmod ↗</a></div>
+        <div class="ev"><span class="name">PVLDB / VLDB</span><span class="desc"><span data-pt>Reprodutibilidade, em coordenação com SIGMOD.</span><span data-en>Reproducibility, coordinated with SIGMOD.</span></span><a href="https://vldb.org/" target="_blank" rel="noopener">vldb ↗</a></div>
+      </div>
+    </div>
+
+    <!-- AI -->
+    <div class="area-group reveal" id="a-ai">
+      <h3><span class="gn">/ia-ml</span><span data-pt>Inteligência Artificial &amp; Aprendizado de Máquina</span><span data-en>Artificial Intelligence &amp; Machine Learning</span></h3>
+      <div class="ev-list">
+        <div class="ev"><span class="name">NeurIPS</span><span class="desc"><span data-pt>Paper Checklist obrigatório (reprodutibilidade/ética); desk-reject sem checklist.</span><span data-en>Mandatory Paper Checklist (reproducibility/ethics); desk-reject without it.</span></span><a href="https://neurips.cc/Conferences/2026/MainTrackHandbook" target="_blank" rel="noopener">neurips26 ↗</a></div>
+        <div class="ev"><span class="name">ML Reproducibility Challenge</span><span class="desc"><span data-pt>Desafio comunitário de reprodução.</span><span data-en>Community reproduction challenge.</span></span><a href="https://reproducibility-challenge.github.io/" target="_blank" rel="noopener">challenge ↗</a></div>
+        <div class="ev"><span class="name">ACM Multimedia</span><span class="desc"><span data-pt>Call for Reproducibility Papers.</span><span data-en>Call for Reproducibility Papers.</span></span><a href="https://2026.acmmm.org/site/call-reproducibility.html" target="_blank" rel="noopener">acmmm26 ↗</a></div>
+        <div class="ev"><span class="name">ACM SIGIR</span><span class="desc"><span data-pt>Artifact Badging em recuperação de informação.</span><span data-en>Artifact Badging in information retrieval.</span></span><a href="https://sigir.org/general-information/acm-sigir-artifact-badging/" target="_blank" rel="noopener">sigir ↗</a></div>
+      </div>
+    </div>
+
+    <!-- REPRO -->
+    <div class="area-group reveal" id="a-rep" style="margin-bottom:0;">
+      <h3><span class="gn">/reprodutibilidade</span><span data-pt>Reprodutibilidade como evento próprio</span><span data-en>Reproducibility as a venue of its own</span></h3>
+      <div class="ev-list">
+        <div class="ev"><span class="name">ACM REP</span><span class="desc"><span data-pt>Conf. on Reproducibility and Replicability — edição 2026 em Delft (TU Delft), 20–22 jul.</span><span data-en>Conf. on Reproducibility and Replicability — 2026 edition in Delft (TU Delft), Jul 20–22.</span></span><a href="https://acm-rep.github.io/2026/" target="_blank" rel="noopener">acm-rep ↗</a></div>
+        <div class="ev"><span class="name">Dagstuhl Seminars</span><span class="desc"><span data-pt>Seminários sobre AE/reprodutibilidade e LIPIcs.</span><span data-en>Seminars on AE/reproducibility and LIPIcs.</span></span><a href="https://drops.dagstuhl.de/" target="_blank" rel="noopener">dagstuhl ↗</a></div>
+        <div class="ev"><span class="name">ECRTS</span><span class="desc"><span data-pt>Sistemas de tempo real — Artifact Evaluation.</span><span data-en>Real-time systems — Artifact Evaluation.</span></span><a href="https://www.ecrts.org/artifact-evaluation/" target="_blank" rel="noopener">ecrts ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== POLITICAS / TAXONOMY ===== -->
+<section id="politicas">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-kicker"><span data-pt>Padrões &amp; vocabulário</span><span data-en>Standards &amp; vocabulary</span></span>
+      <h2 class="sec-title">
+        <span data-pt>A taxonomia que une o campo</span>
+        <span data-en>The taxonomy that unifies the field</span>
+      </h2>
+      <p class="sec-lead">
+        <span data-pt>Os nomes dos selos variam entre comunidades, mas convergem para a taxonomia oficial da ACM. Mapeie sempre os selos locais (inclusive os quatro brasileiros) para estas cinco categorias.</span>
+        <span data-en>Badge names vary across communities but converge to ACM's official taxonomy. Always map local badges (including the four Brazilian ones) to these five categories.</span>
+      </p>
+    </div>
+
+    <div class="tax reveal">
+      <div class="t"><span class="n">ACM · 01</span><h4>Artifacts Available</h4><p><span data-pt>Depositados de forma pública e persistente.</span><span data-en>Publicly and persistently archived.</span></p></div>
+      <div class="t"><span class="n">ACM · 02</span><h4>Evaluated — Functional</h4><p><span data-pt>Documentados, consistentes, completos e executáveis.</span><span data-en>Documented, consistent, complete, exercisable.</span></p></div>
+      <div class="t"><span class="n">ACM · 03</span><h4>Evaluated — Reusable</h4><p><span data-pt>Acima de funcional: facilitam reuso e repropósito.</span><span data-en>Beyond functional: facilitate reuse and repurposing.</span></p></div>
+      <div class="t"><span class="n">ACM · 04</span><h4>Results Reproduced</h4><p><span data-pt>Resultados obtidos de novo com os artefatos dos autores.</span><span data-en>Results obtained again using the authors' artifacts.</span></p></div>
+      <div class="t"><span class="n">ACM · 05</span><h4>Results Replicated</h4><p><span data-pt>Resultados obtidos de forma independente, sem os artefatos.</span><span data-en>Results obtained independently, without the artifacts.</span></p></div>
+    </div>
+
+    <div class="grid cols-3 reveal" style="margin-top:34px;">
+      <div class="card"><span class="tag">Política · ACM</span><h4>Artifact Review and Badging (v1.1)</h4><p><span data-pt>Política e taxonomia oficial de selos da ACM — base terminológica do campo.</span><span data-en>ACM's official badging policy and taxonomy — the field's terminological base.</span></p><a class="link" href="https://www.acm.org/publications/policies/artifact-review-and-badging-current" target="_blank" rel="noopener">acm.org <span class="arr">→</span></a></div>
+      <div class="card"><span class="tag">Grupo · ACM</span><h4>EIG on Reproducibility &amp; Replicability</h4><p><span data-pt>Coordena o esforço editorial e a conferência ACM REP.</span><span data-en>Coordinates the editorial effort and the ACM REP conference.</span></p><a class="link" href="https://reproducibility.acm.org/" target="_blank" rel="noopener">reproducibility.acm.org <span class="arr">→</span></a></div>
+      <div class="card"><span class="tag">Treinamento</span><h4>ACM Reviewers — curso de badging</h4><p><span data-pt>Material oficial de formação de avaliadores de artefatos.</span><span data-en>Official training material for artifact reviewers.</span></p><a class="link" href="https://reviewers.acm.org/training-course/artifact-review-and-badging" target="_blank" rel="noopener">reviewers.acm.org <span class="arr">→</span></a></div>
+      <div class="card"><span class="tag">Histórico</span><h4>artifact-eval.org</h4><p><span data-pt>Página histórica do movimento de AE (Krishnamurthi, Vitek et al.).</span><span data-en>Historical home of the AE movement (Krishnamurthi, Vitek et al.).</span></p><a class="link" href="https://www.artifact-eval.org/" target="_blank" rel="noopener">artifact-eval.org <span class="arr">→</span></a></div>
+      <div class="card"><span class="tag">Diretrizes · PL</span><h4>SIGPLAN — Empirical Evaluation</h4><p><span data-pt>Diretrizes de avaliação empírica/reprodutibilidade referência em PL.</span><span data-en>Reference empirical-evaluation/reproducibility guidelines in PL.</span></p><a class="link" href="https://www.sigplan.org/Resources/EmpiricalEvaluation/" target="_blank" rel="noopener">sigplan.org <span class="arr">→</span></a></div>
+      <div class="card"><span class="tag">Comunidade</span><h4>csartifacts/resources</h4><p><span data-pt>Recursos, guias e histórico comunitário do processo de AE em CS.</span><span data-en>Community resources, guides and history of the AE process in CS.</span></p><a class="link" href="https://github.com/csartifacts/resources" target="_blank" rel="noopener">github.com/csartifacts <span class="arr">→</span></a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CALLOUT ===== -->
+<section style="padding-top:0;">
+  <div class="wrap">
+    <div class="callout reveal">
+      <h2><span data-pt>Do Brasil para o mundo dos artefatos</span><span data-en>From Brazil to the world of artifacts</span></h2>
+      <p>
+        <span data-pt>A documentação aberta da SBC e o paper que a sistematizou mostram que é possível construir um processo de avaliação rigoroso, transparente e sustentável — e contribuir com ideias novas para o campo internacional. Comece pela documentação e pelo artigo.</span>
+        <span data-en>SBC's open documentation and the paper that systematized it show it is possible to build a rigorous, transparent and sustainable evaluation process — and to contribute new ideas to the international field. Start with the documentation and the paper.</span>
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://doc-artefatos.github.io/" target="_blank" rel="noopener">doc-artefatos.github.io ↗</a>
+        <a class="btn btn-ghost" href="https://dl.acm.org/doi/abs/10.1145/3806097.3806100" target="_blank" rel="noopener"><span data-pt>Paper na ACM DL</span><span data-en>Paper on ACM DL</span> ↗</a>
+      </div>
+      <div class="stat-row" style="margin-top:38px;">
+        <div class="stat"><b>2023</b><span data-pt class="block">SBSeg — selo pioneiro</span><span data-en class="block">SBSeg — pioneering badge</span></div>
+        <div class="stat"><b>4</b><span data-pt class="block">selos brasileiros</span><span data-en class="block">Brazilian badges</span></div>
+        <div class="stat"><b>45,8%</b><span data-pt class="block">artefatos no SBRC (2024)</span><span data-en class="block">artifacts at SBRC (2024)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER / RECURSOS ===== -->
+<footer id="recursos">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="#top" style="margin-bottom:16px;">
+          <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="m7 8 4-4 4 4"/><path d="M11 4v9"/><path d="M5 21l2-6h8l2 6"/></svg></span>
+          <span>Artifact<b>Forge</b></span>
+        </a>
+        <p class="desc">
+          <span data-pt>Panorama da avaliação de artefatos e da reprodutibilidade — no Brasil e no mundo. Curadoria de eventos, políticas e infraestrutura, com destaque para a experiência brasileira.</span>
+          <span data-en>A map of artifact evaluation and reproducibility — in Brazil and worldwide. A curation of events, policies and infrastructure, featuring the Brazilian experience.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-pt>Destaques</span><span data-en>Highlights</span></h5>
+        <a href="https://doc-artefatos.github.io/" target="_blank" rel="noopener">doc-artefatos.github.io ↗</a>
+        <a href="https://dl.acm.org/doi/abs/10.1145/3806097.3806100" target="_blank" rel="noopener"><span data-pt>Paper (ACM DL)</span><span data-en>Paper (ACM DL)</span> ↗</a>
+        <a href="https://sol.sbc.org.br/" target="_blank" rel="noopener">SBC OpenLib (SOL) ↗</a>
+        <a href="https://sites.unipampa.edu.br/lea/" target="_blank" rel="noopener">LEA — UNIPAMPA ↗</a>
+      </div>
+      <div>
+        <h5><span data-pt>Navegar</span><span data-en>Navigate</span></h5>
+        <a href="#brasil"><span data-pt>Brasil em destaque</span><span data-en>Brazil featured</span></a>
+        <a href="#mundo"><span data-pt>Panorama mundial</span><span data-en>World panorama</span></a>
+        <a href="#politicas"><span data-pt>Padrões &amp; taxonomia</span><span data-en>Standards &amp; taxonomy</span></a>
+        <a href="https://www.acm.org/publications/policies/artifact-review-and-badging-current" target="_blank" rel="noopener">ACM Badging ↗</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>ArtifactForge · <span data-pt>levantamento atualizado em jun. 2026</span><span data-en>survey updated Jun 2026</span></span>
+      <span data-pt>URLs de “call for artifacts” são versionados por ano — troque o ano no caminho para a edição corrente.</span>
+      <span data-en>“Call for artifacts” URLs are versioned by year — change the year in the path for the current edition.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ---- i18n toggle (PT default, persisted) ----
+  (function () {
+    var html = document.documentElement;
+    var btPt = document.getElementById('bt-pt');
+    var btEn = document.getElementById('bt-en');
+    function setLang(lang) {
+      html.setAttribute('lang', lang === 'en' ? 'en' : 'pt-BR');
+      var en = lang === 'en';
+      btEn.setAttribute('aria-pressed', String(en));
+      btPt.setAttribute('aria-pressed', String(!en));
+      try { localStorage.setItem('af-lang', lang); } catch (e) {}
+    }
+    btPt.addEventListener('click', function () { setLang('pt'); });
+    btEn.addEventListener('click', function () { setLang('en'); });
+    var saved;
+    try { saved = localStorage.getItem('af-lang'); } catch (e) {}
+    if (!saved) {
+      saved = (navigator.language || '').toLowerCase().indexOf('pt') === 0 ? 'pt' : 'pt';
+    }
+    setLang(saved);
+  })();
+
+  // ---- scroll reveal ----
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (e) { e.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    els.forEach(function (e) { io.observe(e); });
+    // hero reveals fire immediately on load
+    window.addEventListener('load', function () {
+      document.querySelectorAll('.hero .reveal').forEach(function (e) { e.classList.add('in'); });
+    });
+  })();
+</script>
+</body>
+</html>
